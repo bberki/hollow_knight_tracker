@@ -34,6 +34,34 @@
     .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
     .hidden{display:none}
   </style>
+  <!-- Style overrides for a sleeker look -->
+  <style>
+    :root{ --radius:14px; --radius-sm:10px; --shadow:0 1px 2px rgba(15,23,42,.06),0 6px 24px rgba(15,23,42,.06); --ring:0 0 0 3px rgba(37,99,235,.25); --accent:#2563eb }
+    :root[data-theme="dark"]{ --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 28px rgba(0,0,0,.35); --ring:0 0 0 3px rgba(96,165,250,.25); --accent:#60a5fa }
+    body{ font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu }
+    .container{ max-width:960px }
+    h1{ letter-spacing:.2px }
+    .btn{ border-radius:var(--radius-sm); transition:transform .08s ease, box-shadow .15s ease, background .2s ease }
+    .btn:hover{ box-shadow:var(--shadow) }
+    .btn:active{ transform:translateY(1px) }
+    .btn:focus-visible{ outline:none; box-shadow:var(--ring) }
+    .btn.primary{ border-color:transparent }
+    .input{ padding:10px 12px; border-radius:var(--radius-sm); transition:box-shadow .15s ease,border-color .15s ease }
+    .input:focus{ outline:none; border-color:var(--accent); box-shadow:var(--ring) }
+    .note{ padding:8px 10px; border-radius:var(--radius-sm) }
+    .note:focus{ outline:none; border-color:var(--accent); box-shadow:var(--ring) }
+    .card{ border-radius:var(--radius); box-shadow:var(--shadow) }
+    .card-h{ gap:8px }
+    .card-h h2{ font-size:15px; font-weight:600 }
+    .card-h:hover{ background:color-mix(in oklab, var(--card) 92%, var(--border)) }
+    .rowitem{ padding:12px 0 }
+    .badge{ background:color-mix(in oklab, var(--card) 85%, var(--border)) }
+    .mandatory{ border-color:transparent }
+    .tab-btn{ border-radius:var(--radius-sm); transition:box-shadow .15s ease, background .2s ease }
+    .tab-btn:hover{ box-shadow:var(--shadow) }
+    .tab-btn.active{ border-color:transparent }
+    .bar{ background:linear-gradient(90deg,var(--accent),color-mix(in oklab,var(--accent) 80%, var(--card))); transition:width .25s ease }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -43,7 +71,7 @@
     <div class="tabs">
       <button id="tab-boss" class="tab-btn active">Bosses</button>
       <button id="tab-112" class="tab-btn">112% Checklist</button>
-      <button id="theme-toggle" class="tab-btn" style="margin-left:auto" title="Toggle theme">🌙 Dark</button>
+      <button id="theme-toggle" class="tab-btn" style="margin-left:auto" title="Toggle theme">🌙</button>
     </div>
 
     <!-- BOSS VIEW -->
@@ -459,13 +487,16 @@
   }
   function applyTheme(t){
     document.documentElement.setAttribute('data-theme', t);
-    if(themeToggle){ themeToggle.textContent = (t==='dark' ? '☀️ Light' : '🌙 Dark'); }
+    if(themeToggle){ themeToggle.textContent = (t==='dark' ? '☀️' : '🌙'); }
   }
   function setTheme(t){ localStorage.setItem(THEME_KEY, t); applyTheme(t); }
+  function updateThemeToggleLabel(){ if(!themeToggle) return; const t=document.documentElement.getAttribute('data-theme'); themeToggle.textContent = (t==='dark' ? '☀' : '☾'); }
   applyTheme(getPreferredTheme());
+  updateThemeToggleLabel();
   themeToggle && themeToggle.addEventListener('click',()=>{
     const next = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
     setTheme(next);
+    updateThemeToggleLabel();
   });
 
   // Tabs
@@ -482,6 +513,9 @@
   renderBosses();
   render112();
   update112UI();
+  // Fix title/h1 possible mojibake and ensure consistent branding
+  try{ document.title = 'Hollow Knight 112% + Boss Tracker'; }catch{}
+  try{ const h=document.querySelector('h1'); if(h) h.textContent='Hollow Knight 112% + Boss Tracker'; }catch{}
 })();
 </script>
 </body>
