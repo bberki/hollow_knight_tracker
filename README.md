@@ -4,7 +4,7 @@ Check items off and it stores locally in your browser.
 
 ## Live Demo
 
-Uygulama şu adreste yayında:  
+The app is live here::  
 [https://bberki.github.io/hollow_knight_tracker](https://bberki.github.io/hollow_knight_tracker)
 
 ## Features
