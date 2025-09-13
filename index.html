@@ -6,13 +6,14 @@
   <title>Hollow Knight · 112% + Boss Tracker</title>
   <style>
     :root{--bg:#f6f7fb;--fg:#0f172a;--muted:#64748b;--card:#fff;--border:#e2e8f0;--accent:#111827}
+    :root[data-theme="dark"]{--bg:#0b1020;--fg:#e5e7eb;--muted:#94a3b8;--card:#111827;--border:#1f2937;--accent:#2563eb}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
     .container{max-width:1000px;margin:0 auto;padding:24px}
     h1{margin:0 0 8px;font-size:24px} .sub{color:var(--muted);margin:0 0 16px}
     .row{display:flex;gap:8px;flex-wrap:wrap}
-    .btn{background:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:12px;cursor:pointer}
+    .btn{background:var(--card);border:1px solid var(--border);padding:8px 12px;border-radius:12px;cursor:pointer;color:var(--fg)}
     .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .input{flex:1;min-width:220px;background:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:12px}
+    .input{flex:1;min-width:220px;background:var(--card);border:1px solid var(--border);padding:8px 12px;border-radius:12px;color:var(--fg)}
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
     .card-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
     .card-h h2{margin:0;font-size:16px} .chev{color:var(--muted)}
@@ -21,14 +22,15 @@
     .rowitem:first-child{border-top:0}
     label{cursor:pointer}
     .meta{color:var(--muted);font-size:12px}
-    .note{width:100%;max-width:380px;border:1px solid var(--border);border-radius:10px;padding:6px 8px}
-    .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+    .note{width:100%;max-width:380px;border:1px solid var(--border);border-radius:10px;padding:6px 8px;background:var(--card);color:var(--fg)}
+    .input::placeholder,.note::placeholder{color:var(--muted)}
+    .progress{height:10px;background:var(--border);border-radius:999px;overflow:hidden}
     .bar{height:100%;background:var(--accent);width:0}
     .footer{color:var(--muted);font-size:12px;margin-top:16px}
-    .badge{font-size:11px;border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:#111}
-    .mandatory{background:#111;color:#fff;border-color:#111}
+    .badge{font-size:11px;border:1px solid var(--border);border-radius:999px;padding:2px 8px;color:var(--fg)}
+    .mandatory{background:var(--accent);color:#fff;border-color:var(--accent)}
     .tabs{display:flex;gap:8px;margin:12px 0}
-    .tab-btn{padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;cursor:pointer}
+    .tab-btn{padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:var(--card);cursor:pointer;color:var(--fg)}
     .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
     .hidden{display:none}
   </style>
@@ -41,6 +43,7 @@
     <div class="tabs">
       <button id="tab-boss" class="tab-btn active">Bosses</button>
       <button id="tab-112" class="tab-btn">112% Checklist</button>
+      <button id="theme-toggle" class="tab-btn" style="margin-left:auto" title="Toggle theme">🌙 Dark</button>
     </div>
 
     <!-- BOSS VIEW -->
@@ -353,6 +356,25 @@
       sec.appendChild(body); root.appendChild(sec);
     });
   }
+
+  // Theme
+  const THEME_KEY = 'hk-theme';
+  const themeToggle = document.getElementById('theme-toggle');
+  function getPreferredTheme(){
+    const stored = localStorage.getItem(THEME_KEY);
+    if(stored==="light"||stored==="dark") return stored;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    if(themeToggle){ themeToggle.textContent = (t==='dark' ? '☀️ Light' : '🌙 Dark'); }
+  }
+  function setTheme(t){ localStorage.setItem(THEME_KEY, t); applyTheme(t); }
+  applyTheme(getPreferredTheme());
+  themeToggle && themeToggle.addEventListener('click',()=>{
+    const next = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
+    setTheme(next);
+  });
 
   // Tabs
   const tabBoss = document.getElementById('tab-boss');
