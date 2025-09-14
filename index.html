@@ -54,6 +54,9 @@
     .card-h{ gap:8px }
     .card-h h2{ font-size:15px; font-weight:600 }
     .card-h:hover{ background:color-mix(in oklab, var(--card) 92%, var(--border)) }
+    .card-h-left{ display:flex; align-items:center; gap:8px }
+    .card-h-right{ display:flex; align-items:center; gap:8px }
+    .ratio{ min-width:56px; text-align:right; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums }
     .rowitem{ padding:12px 0 }
     .badge{ background:color-mix(in oklab, var(--card) 85%, var(--border)) }
     .mandatory{ border-color:transparent }
@@ -211,8 +214,14 @@
     PHASE_ORDER.filter(p=>groups[p]?.length).forEach(phase=>{
       const sec = h('div',{class:'card',style:'margin-bottom:12px'});
       const head = h('div',{class:'card-h'});
-      head.appendChild(h('h2',{}, phase));
-      head.appendChild(h('div',{class:'sub'}, `${(groups[phase].filter(b=>state.done[b.id]).length)||0}/${groups[phase].length}`));
+      const left = h('div',{class:'card-h-left'});
+      const right = h('div',{class:'card-h-right'});
+      const doneInGroup = (groups[phase].filter(b=>state.done[b.id]).length)||0;
+      const totalInGroup = groups[phase].length;
+      left.appendChild(h('h2',{}, phase));
+      right.appendChild(h('div',{class:'ratio'}, `${doneInGroup}/${totalInGroup}`));
+      head.appendChild(left);
+      head.appendChild(right);
       sec.appendChild(head);
 
       const body = h('div',{class:'card-b'});
@@ -385,13 +394,52 @@
     DATA112.forEach(group=>{
       const sec = h('div',{class:'card',style:'margin-bottom:12px'});
       const head = h('div',{class:'card-h'});
-      head.appendChild(h('h2',{}, group.cat));
-      head.appendChild(h('div',{class:'sub'}, `${group.items.filter(it=>state112.done[it.id]).length}/${group.items.length}`));
+      const left = h('div',{class:'card-h-left'});
+      const right = h('div',{class:'card-h-right'});
+      const doneInGroup = group.items.filter(it=>state112.done[it.id]).length;
+      left.appendChild(h('h2',{}, group.cat));
+      right.appendChild(h('div',{class:'ratio'}, `${doneInGroup}/${group.items.length}`));
+      head.appendChild(left);
+      head.appendChild(right);
       sec.appendChild(head);
       const body = h('div',{class:'card-b'});
       group.items.forEach(item=>{ const row=h('div',{class:'rowitem'}); const cb=h('input',{type:'checkbox'}); cb.checked=!!state112.done[item.id]; cb.addEventListener('change',()=>{ state112.done[item.id]=cb.checked; save112(); render112(); }); const label=h('label',{}, item.label); row.appendChild(cb); row.appendChild(label); body.appendChild(row); });
       sec.appendChild(body); root.appendChild(sec);
     });
+  }
+
+  // Smooth collapse/expand for 112% sections
+  function setCollapsed(el, collapsed, animate){
+    if(!el) return;
+    el.dataset.collapsed = collapsed ? '1' : '0';
+    el.style.overflow = 'hidden';
+    const setNoAnim = ()=>{
+      if(collapsed){ el.style.height='0px'; el.style.opacity='0'; }
+      else { el.style.height=''; el.style.opacity='1'; }
+    };
+    if(!animate){ setNoAnim(); return; }
+
+    // Ensure styles are initialized
+    const end = ()=>{ el.style.overflow=''; el.style.transition=''; if(!collapsed){ el.style.height=''; } };
+    if(collapsed){
+      // slide up
+      el.style.height = el.scrollHeight + 'px';
+      void el.offsetHeight; // reflow
+      el.style.transition = 'height .25s ease, opacity .2s ease';
+      el.style.height = '0px';
+      el.style.opacity = '0';
+      el.addEventListener('transitionend', function handler(){ el.removeEventListener('transitionend', handler); end(); }, {once:true});
+    } else {
+      // slide down
+      el.style.height = 'auto';
+      const full = el.scrollHeight;
+      el.style.height = '0px'; el.style.opacity='0';
+      void el.offsetHeight; // reflow
+      el.style.transition = 'height .25s ease, opacity .2s ease';
+      el.style.height = full + 'px';
+      el.style.opacity = '1';
+      el.addEventListener('transitionend', function handler(){ el.removeEventListener('transitionend', handler); end(); }, {once:true});
+    }
   }
 
   // 112%: collapse + search + export/import/reset
@@ -406,23 +454,27 @@
 
       // Apply fold state when no active search
       const folded = q ? false : !!(state112.fold && state112.fold[cat]);
-      body.classList.toggle('hidden', folded);
+      setCollapsed(body, folded, false);
 
       // Ensure chevron exists and reflects state
-      let chev = head.querySelector('.chev');
+      // Ensure right container exists
+      let headRight = head.querySelector('.card-h-right');
+      if(!headRight){ headRight = document.createElement('div'); headRight.className='card-h-right'; head.appendChild(headRight); }
+
+      let chev = headRight.querySelector('.chev');
       if(!chev){
         chev = document.createElement('div');
         chev.className = 'chev';
         head.style.cursor = 'pointer';
-        head.appendChild(chev);
+        headRight.appendChild(chev);
       }
-      chev.textContent = body.classList.contains('hidden') ? '▸' : '▾';
+      chev.textContent = (body.dataset.collapsed==='1') ? '▸' : '▾';
 
       // Click to toggle collapse (persist)
       if(!head._collapseBound){
         head.addEventListener('click',()=>{
-          const nowHidden = !body.classList.contains('hidden');
-          body.classList.toggle('hidden', nowHidden);
+          const nowHidden = !(body.dataset.collapsed==='1');
+          setCollapsed(body, nowHidden, true);
           chev.textContent = nowHidden ? '▸' : '▾';
           state112.fold = state112.fold || {};
           state112.fold[cat] = nowHidden;
@@ -442,7 +494,7 @@
       });
       // When searching, force body open and hide card if nothing matches
       if(q){
-        body.classList.remove('hidden');
+        setCollapsed(body, false, false);
         card.style.display = (visibleRows>0 || catMatch) ? '' : 'none';
       } else {
         card.style.display = '';
