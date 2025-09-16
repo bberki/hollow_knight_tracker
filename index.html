@@ -148,7 +148,7 @@
   const STORAGE_KEY_112 = 'hk-112-tracker-v1-en';
 
   // ---- Boss dataset (English/original names) ----
-  const PHASE_ORDER = ['Early Game','Mid Game','Late Game','Final','Dream'];
+  const PHASE_ORDER = ['Early Game','Mid Game','Late Game','Final','Dream Bosses','Warrior Dreams'];
   const BOSSES = [
     // Early
     {id:'false-knight', name:'False Knight', area:'Forgotten Crossroads', mandatory:true, phase:'Early Game', order:1},
@@ -173,12 +173,22 @@
     {id:'hollow-knight', name:'The Hollow Knight', area:'Temple of the Black Egg', mandatory:true, phase:'Final', order:14},
     {id:'radiance', name:'Radiance', area:'Dream / Endgame', mandatory:false, phase:'Final', order:15},
 
-    // Dream variants (optional)
-    {id:'failed-champion', name:'Failed Champion (Dream)', area:'Forgotten Crossroads', mandatory:false, phase:'Dream', order:16},
-    {id:'soul-tyrant', name:'Soul Tyrant (Dream)', area:'City of Tears', mandatory:false, phase:'Dream', order:17},
-    {id:'lost-kin', name:'Lost Kin (Dream)', area:'Ancient Basin', mandatory:false, phase:'Dream', order:18},
-    {id:'white-defender', name:'White Defender (Dream)', area:'Royal Waterways', mandatory:false, phase:'Dream', order:19},
-    {id:'nkg', name:'Nightmare King Grimm', area:'Grimm Troupe', mandatory:false, phase:'Dream', order:20},
+    // Dream Bosses (optional)
+    {id:'failed-champion', name:'Failed Champion (Dream)', area:'Forgotten Crossroads', mandatory:false, phase:'Dream Bosses', order:16},
+    {id:'soul-tyrant', name:'Soul Tyrant (Dream)', area:'City of Tears', mandatory:false, phase:'Dream Bosses', order:17},
+    {id:'lost-kin', name:'Lost Kin (Dream)', area:'Ancient Basin', mandatory:false, phase:'Dream Bosses', order:18},
+    {id:'white-defender', name:'White Defender (Dream)', area:'Royal Waterways', mandatory:false, phase:'Dream Bosses', order:19},
+    {id:'nkg', name:'Nightmare King Grimm', area:'Grimm Troupe', mandatory:false, phase:'Dream Bosses', order:20},
+    {id:'grey-prince-zote', name:'Grey Prince Zote', area:"Dirtmouth (Bretta's House)", mandatory:false, phase:'Dream Bosses', order:21},
+
+    // Warrior Dreams (optional)
+    {id:'elder-hu', name:'Elder Hu', area:'Fungal Wastes', mandatory:false, phase:'Warrior Dreams', order:22},
+    {id:'xero', name:'Xero', area:'Resting Grounds', mandatory:false, phase:'Warrior Dreams', order:23},
+    {id:'gorb', name:'Gorb', area:'Howling Cliffs', mandatory:false, phase:'Warrior Dreams', order:24},
+    {id:'no-eyes', name:'No Eyes', area:'Greenpath (Stone Sanctuary)', mandatory:false, phase:'Warrior Dreams', order:25},
+    {id:'marmu', name:'Marmu', area:"Queen's Gardens", mandatory:false, phase:'Warrior Dreams', order:26},
+    {id:'galien', name:'Galien', area:'Deepnest', mandatory:false, phase:'Warrior Dreams', order:27},
+    {id:'markoth', name:'Markoth', area:"Kingdom's Edge", mandatory:false, phase:'Warrior Dreams', order:28},
   ];
 
   // ---- Boss state & UI ----
